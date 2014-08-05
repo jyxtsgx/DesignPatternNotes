@@ -82,6 +82,109 @@ The Factory Pattern//工厂模式
 			wheelSize:"so big"
 		})
 Abstract Factories//抽象
-	抽象工厂将一系列单独的工厂
+	抽象工厂将一系列有相同目标的工厂，封装起来。
+	var abstractVehicleFactory=(function(){
+		//用于存储具体交通工具的类型
+		var types={};
 
+		return{
+			getVehicle:function(type,customizations){
+				var Vehicle=types[type];
 
+				return(Vehicle?new Vehicle(customizations):null);
+			},
+			registerVehicle:function(type,Vehicle){
+				var proto=Vehicle.prototype;
+				//实现了接口才会进行工厂返回
+				if(proto.drive&&proto.breakDown){
+					//这里做具体工厂的注册
+					types[type]=Vehicle;
+				}
+				//可以链式调用
+				return abstractVehicleFactory;
+			}
+		}
+	})();
+	abstractVehicleFactory.registerVehicle('car',car).registerVehicle('truck',Truck);
+	//实例化一个类
+	var car=abstractVehicleFactory.getVehicle('car',{
+		color:'lime green',
+		state:'like new'
+	});
+	var truck=abstractVehicleFactory.getVehicle('truck',{
+		wheelSize:'medium',
+		color:'neon yellow'
+	})
+Mixin Pattern
+	subClass//子类
+		var Person=function(firstName,lastName){
+			this.firstName=firstName;
+			this.lastName=lastName;
+			this.gender='male';
+		}
+		//实例化一个普通人类
+		var clark=new Person('Clark','Kent');
+		var Superhero=function(firstName,lastName,powers){
+			Person.call(this,firstName,lastName);
+			this.powers=powers;
+		};
+		//使用prototype继承person的方法
+		Superhero.prototype=Object.create(Person.prototype);
+		var Superhero.prototype=Object.create(Person.prototype);
+		var superman=new Superhero('Clark','Kent',['flight','heat-vision']);
+		console.log(superman);
+	Mixins//混入功能
+		我们可以将混合继承看做收集不同的功能。
+		var Car=function(settings){
+			this.model=settings.model||'no model provided';
+			this.color=settings.color||'no color provided';
+		};
+		//即将被mixin的类，拥有下面这些方法
+		Mixin=function(){};
+
+		Mixin.prototype={
+			driveForward:function(){
+				console.log('drive forward');
+			},
+			driveBackward:function(){
+				console.log('drive backward');
+			},
+
+			driveSideways:function(){
+				console.log('drive sideways');
+			}
+
+		}
+
+		function augment(receivingClass,givingClass){
+			//混入一部分方法
+			if(arguments[2]){
+				for(var i=2,len=arguments.length;i<len;i++){
+					receivingClass.prototype[arguments[i]]=givingClass.prototype[arguments[i]];
+				}
+			}
+			//混入所有的方法
+			else{
+				for(var methodName in givingClass.prototype){
+					if(!Object.hasOwnProperty.call(receivingClass.prorotype,methodName)){
+						receivingClass.prorotype[methodName]=givingClass.prorotype[methodName];
+					}
+				}
+			}
+		}
+		//使用augement方法来增强driveBackward
+		augment(Car,Mixin,'driveForward','driveBackward');
+		//Create a new Car
+		var myCar=new Car({
+			model:"Mercedes benz",
+			color:'blue'
+		});
+		//测试
+		myCar.driveForward();
+		myCar.driveBackward();
+		augment(Car,Mixin);
+		var mySportsCar=new Car({
+			model:'Porsche',
+			color:'red'
+		});
+		mySportsCar.driveSideways();
