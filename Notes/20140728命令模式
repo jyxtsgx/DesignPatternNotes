@@ -1,0 +1,30 @@
+The Command Pattern//命令模式
+	\命令模式将方法的调用，请求和操作封装在一个单独的对象中。让我们可以将方法的调用参数化,并将方法当做参数进行传送，根据自己的需要来执行。另外，它还可以将方法的调用与实现解耦，让我们在替换一个具体类的时候有更高级的灵活性。
+	\命令模式背后的意义在于:将分发命令的职责从执行命令的对象中分离出来，将这种职责代理给其它的对象。
+	\实现上，简单的命令对象将action和想要调用这个action的对象连接了起来。他们一贯包含一种操作的实现。所有的命令对象只要实现了相同的接口，就可以很简单的换掉。
+	\例子
+		1\
+		(function(){
+			var carManager={
+				//retuest information
+				retuestInfo:function(model,id){
+
+				},
+				//purchase the car
+				buyVehicle:function(model,id){
+					return "You have successfull puchased Item";
+				},
+				//
+				arrangeViewing:function(model,id){
+
+				}
+			}
+		})();
+		//我们在调用这些方法的时候，都需要直接调用。我们来对这些方法做一个丑行
+		carManager.execute=function(name){
+			return carManager[name]&&carManager[name].apply(carManager,[].slice.call(arguments,1));
+		}
+		//这样我们就可以做直接的调用
+		carManager.execute("arrangeViewing","Ferrari","14523");
+	分析：这个模式在使用的过程中，我们将对象方法的调用进行抽象，在其它模块进行调用时可以进行统一的调用
+	
